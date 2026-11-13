@@ -1,0 +1,10 @@
+{
+  "modelVersion": "5.0.0",
+  "name": "tfa_watch",
+  "version": "1.0.0",
+  "description": "手表端 2FA 验证器",
+  "dependencies": {},
+  "devDependencies": {
+    "@ohos/hypium": "1.0.19"
+  }
+}

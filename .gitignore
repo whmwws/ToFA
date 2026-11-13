@@ -1,0 +1,62 @@
+# ---------- 本地配置 / 绝对路径 ----------
+local.properties
+**/local.properties
+*.keystore
+*.jks
+*.p12
+*.p7b
+*.csr
+keystore.properties
+signing.properties
+
+# ---------- 构建产物 ----------
+build/
+**/build/
+.gradle/
+**/.gradle/
+.kotlin/
+**/.kotlin/
+.hvigor/
+**/.hvigor/
+.cxx/
+oh_modules/
+**/oh_modules/
+node_modules/
+**/node_modules/
+*.har
+*.hap
+*.hsp
+dist/
+*.apk
+*.aab
+*.idsig
+# 手机端运行期需要用到的内置手表安装包，必须随源码提交
+!phone/app/src/main/assets/watch-app.apk
+
+# ---------- IDE / 系统 ----------
+.idea/
+**/.idea/
+*.iml
+.DS_Store
+Thumbs.db
+*.log
+*.hprof
+captures/
+
+# ---------- 本机取证 / 截图 / 打包 ----------
+evidence/
+screenshots/
+.screenshots/
+# 本地演示与收尾资料（含真实演示账号信息，只留在本机）
+2026-11-14/
+*.zip
+watch_prefs.xml
+**/prefs*.xml
+**/*_prefs.xml
+# 签名申请材料与个人收款码，不进入公开仓库
+CSR/
+捐赠二维码/
+# 鸿蒙侧签名目录（私钥 / profile / 证书整目录排除）
+**/signature/
+# 工具生成的嵌套仓库，不随源码提交
+watch/.codegenie/

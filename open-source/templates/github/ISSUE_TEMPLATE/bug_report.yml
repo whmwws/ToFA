@@ -1,0 +1,62 @@
+name: 问题报告
+description: 报告手机端或手表端的普通功能问题；安全漏洞请使用私密报告
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        请勿填写真实密钥、验证码、激活码、应用锁密码或完整导出文件。安全漏洞请使用 Security 私密报告。
+  - type: dropdown
+    id: platform
+    attributes:
+      label: 受影响端
+      options:
+        - 手机端
+        - 手表端
+        - 双端同步
+        - 文档与构建
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: 应用版本
+      description: 例如 p-0.2.0 或 w-0.2.0
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: 设备与系统
+      description: 设备型号、Android 版本；手表请注明圆屏或方屏
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 最小复现步骤
+      placeholder: |
+        1. 打开……
+        2. 点击……
+        3. 出现……
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 预期结果与实际结果
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 脱敏截图或日志
+      description: 请先移除账号名、密钥、验证码、IP、唯一码和私人信息
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: 提交前确认
+      options:
+        - label: 我已搜索现有 Issue，并确认本报告不包含敏感数据或安全漏洞细节
+          required: true

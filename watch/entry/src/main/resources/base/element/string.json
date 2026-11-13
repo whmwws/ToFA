@@ -1,0 +1,16 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "手表端 ToFA 验证器"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "ToFA 主界面"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "ToFA"
+    }
+  ]
+}

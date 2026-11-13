@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.TFAWatch">
+
+        <!-- 手表系统输入法以全屏浮层运行：不在键盘弹出时重排窗口，
+             避免固定高度按钮被挤压/错位；键盘收起由 WatchEditText 明确调用平台 API。 -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:windowSoftInputMode="adjustNothing"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- 手机端通过无线调试推送主题色：push 文件后广播本组件，前台即时刷新配色。 -->
+        <receiver
+            android:name=".data.ThemeCommandReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="ToFA.Android.whmwws.watch.THEME_COMMAND" />
+            </intent-filter>
+        </receiver>
+    </application>
+
+</manifest>

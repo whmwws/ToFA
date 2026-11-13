@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 安全漏洞私密报告
+    url: https://github.com/OWNER/ToFA/security/advisories/new
+    about: 请勿在公开 Issue 中披露漏洞、密钥、验证码、激活码或导出文件
+  - name: ToFA 官网
+    url: https://whmwws.icu/tools/ToFA
+    about: 查看项目介绍与使用说明

@@ -1,0 +1,19 @@
+{
+  "name": "watch2fa",
+  "version": "1.0.0",
+  "ohos": {
+    "org": "huawei",
+    "buildTool": "hvigor",
+    "directoryLevel": "project"
+  },
+  "description": "2FA TOTP authenticator for HarmonyOS watch",
+  "repository": {},
+  "license": "ISC",
+  "dependencies": {
+    "@ohos/hvigor": "2.4.2",
+    "@ohos/hvigor-ohos-plugin": "2.4.2"
+  },
+  "devDependencies": {
+    "@types/node": "16.11.68"
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "app": {
+        "signingConfigs": [
+      {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "storeFile": "./signature/tfa_debug.p12",
+          "storePassword": "000000304a66c32dcec7bb75aebe3b844df49a8149b4188528434f9c8059a58f09fb1eedf0ca511bfe3a6fe71a599ffd9abd33f80cfcbb7d587c9dafc534b0d8",
+          "keyAlias": "tfa_debug_key",
+          "keyPassword": "000000304a66c32dcec7bb75aebe3b844df49a8149b4188528434f9c8059a58f09fb1eedf0ca511bfe3a6fe71a599ffd9abd33f80cfcbb7d587c9dafc534b0d8",
+          "signAlg": "SHA256withECDSA",
+          "profile": "./signature/tfa_debug.p7b",
+          "certpath": "./signature/tfa_debug.cer"
+        }
+      }
+    ],
+    "products": [
+      {
+        "name": "default",
+        "signingConfig": "default",
+        "compatibleSdkVersion": "5.0.0(12)",
+        "runtimeOS": "HarmonyOS"
+      }
+    ],
+    "buildModeSet": [
+      {
+        "name": "debug"
+      },
+      {
+        "name": "release"
+      }
+    ]
+  },
+  "modules": [
+    {
+      "name": "entry",
+      "srcPath": "./entry",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": [
+            "default"
+          ]
+        }
+      ]
+    }
+  ]
+}

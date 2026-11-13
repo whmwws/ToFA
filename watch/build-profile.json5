@@ -1,0 +1,42 @@
+{
+  "app": {
+    "compileSdkVersion": 9,
+    "compatibleSdkVersion": 9,
+    "signingConfigs": [
+      {
+        "name": "debug",
+        "type": "OpenHarmony",
+        "material": {
+          "storeFile": "./signature/watch4p.p12",
+          "storePassword": "0000001a9951564d1eb36694b5303c9f459a5604a4420ef1322669c42302e0661175a804a1c2ae0aab12",
+          "keyAlias": "watch4p",
+          "keyPassword": "0000001a9951564d1eb36694b5303c9f459a5604a4420ef1322669c42302e0661175a804a1c2ae0aab12",
+          "signAlg": "SHA256withECDSA",
+          "profile": "./signature/watch4pDebug.p7b",
+          "certpath": "./signature/watch4p.cer"
+        }
+      }
+    ],
+    "products": [
+      {
+        "name": "default",
+        "bundleName": "tofa.hmos.whmwws.watch",
+        "signingConfig": "debug"
+      }
+    ]
+  },
+  "modules": [
+    {
+      "name": "entry",
+      "srcPath": "./entry",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": [
+            "default"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "ToFA main module"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "ToFA Authenticator"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "ToFA"
+    }
+  ]
+}

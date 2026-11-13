@@ -1,0 +1,16 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "ToFA 主模块"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "ToFA 验证器"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "ToFA"
+    }
+  ]
+}

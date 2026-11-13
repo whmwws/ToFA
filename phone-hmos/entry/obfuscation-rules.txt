@@ -1,0 +1,7 @@
+# 混淆规则（release 构建保留 UIAbility 与页面入口）
+-keep
+./ets/entryability/EntryAbility.ets
+-keep
+./ets/pages/Index.ets
+-keep
+./ets/pages/AddAccount.ets
