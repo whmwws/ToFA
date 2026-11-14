@@ -60,3 +60,6 @@ CSR/
 **/signature/
 # 工具生成的嵌套仓库，不随源码提交
 watch/.codegenie/
+# DevEco Studio AppAnalyzer 本地工具缓存（每个开发者本机重新生成）
+.appanalyzer/
+**/.appanalyzer/

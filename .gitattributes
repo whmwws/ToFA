@@ -1,0 +1,24 @@
+# ---------- GitHub linguist 语言统计 ----------
+# 只让双端实际实现源码（Kotlin / ArkTS / 单元测试）参与主语言统计，
+# 避免文档、工具链包装脚本、锁文件与打包资源把占比带偏。
+
+# 文档与社区治理模板不计入
+*.md linguist-documentation
+open-source/** linguist-documentation
+
+# Gradle / hvigor 包装脚本与工程脚手架属于第三方工具链，不计入项目语言
+**/gradlew linguist-vendored
+**/gradlew.bat linguist-vendored
+**/hvigorw linguist-vendored
+**/hvigorw.bat linguist-vendored
+**/hvigorfile.ts linguist-vendored
+**/gradle/wrapper/** linguist-vendored
+watch/hvigor/hvigor-wrapper.js linguist-vendored
+
+# 依赖锁文件与工具生成缓存不计入
+**/package-lock.json linguist-generated
+**/oh-package-lock.json5 linguist-generated
+**/.appanalyzer/** linguist-generated
+
+# 随 App 打包的二进制资源（内置手表 APK、许可证文本）不计入
+phone/app/src/main/assets/** linguist-vendored
