@@ -12,9 +12,11 @@ Gitee 是本项目的主发布渠道，国内下载速度快，附件与 Release
 
 海外网络或从境外访问时，可以改用海外镜像：
 
-- [GitHub 发布页（海外镜像）](https://github.com/whmwws/ToFA/releases)
+- [GitHub 仓库主页（海外镜像）](https://github.com/whmwws/ToFA)
 
 安装包为 Debug 构建，使用 Android Debug 签名，可与同一签名的旧版本直接覆盖升级。每个版本的 SHA-256 与验证范围写在对应 Release 说明里。
+
+手机浏览器下载 APK 后如果文件名变成 `.apk.zip`，把后缀改回 `.apk` 即可正常安装。Gitee 附件接口会把 APK（本质是 ZIP 容器）按压缩包类型返回，文件名本身没有变化；在电脑浏览器下载，或长按链接选择「在浏览器打开」后下载，可以避免该问题。
 
 ## 快速上手
 

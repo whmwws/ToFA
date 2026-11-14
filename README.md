@@ -12,7 +12,7 @@ GitHub Release 是主发布渠道，每个版本同时提供手机端与手表�
 
 国内网络访问 GitHub 较慢时，请改用国内镜像：
 
-- [Gitee 发布页（国内镜像）](https://gitee.com/whmwws/ToFA/releases)
+- [Gitee 仓库主页（国内镜像）](https://gitee.com/whmwws/ToFA)
 
 每次发布的同时会更新 [版本更新日志](open-source/CHANGELOG.md)；应用内「设置 → 关于 → 版本更新日志」也能离线查看同一份内容。
 

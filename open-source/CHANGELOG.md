@@ -22,6 +22,8 @@
 
 - GitHub 与 Gitee 分别维护平台版 README：各自平台作为第一下载入口，对端仅作为镜像。
 - README 移除 Markdown 表格与英文板块，长链接改为独立成行的说明性链接。
+- 双端 README 的镜像改为指向对端仓库主页，下载区块固定在标题与简介之后的最上方。
+- Gitee 版 README 补充手机下载 APK 被存成 `.apk.zip` 的处理说明（Gitee 附件接口按 `application/zip` 返回，文件本身未变）。
 
 ## 0.2.2 - 2026-11-14
 
