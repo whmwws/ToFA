@@ -11,7 +11,8 @@
 ```text
 ToFA/
 ├─ LICENSE                    # Apache-2.0 唯一全文，保留在根目录供平台识别
-├─ README.md                  # 项目、安装、构建与贡献入口
+├─ README.md                  # GitHub 主入口：功能、安装、构建与贡献
+├─ README.osc.md              # Gitee 主入口：Gitee 优先的下载与说明（Gitee 优先显示该文件）
 ├─ OPEN_SOURCE.md             # 本手册
 ├─ .gitignore                 # 本机配置、签名、构建产物和私人文件排除规则
 ├─ open-source/               # 全部开源社区与发布材料
@@ -107,7 +108,7 @@ git log --all --name-only --pretty=format:
 cd /path/to/ToFA
 git init
 git branch -M main
-git add .gitignore README.md OPEN_SOURCE.md LICENSE open-source phone watch-android
+git add .gitignore README.md README.osc.md OPEN_SOURCE.md LICENSE open-source phone watch-android
 git status --short
 git diff --cached --stat
 git diff --cached

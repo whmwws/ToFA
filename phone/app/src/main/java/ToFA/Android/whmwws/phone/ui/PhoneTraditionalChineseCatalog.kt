@@ -10,6 +10,7 @@ internal val PhoneTraditionalChinesePack = LanguagePack(
         "传递" to "傳遞",
         "导出可选加密，导入自动识别" to "匯出可選加密，匯入自動辨識",
         "本机唯一码" to "本機唯一碼",
+        "唯一码" to "唯一碼",
         "重装不变，输入时可不带 -" to "重裝不變，輸入時可不帶 -",
         "显示唯一码二维码" to "顯示唯一碼 QR Code",
         "显示与交互" to "顯示與互動",

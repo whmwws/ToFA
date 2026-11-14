@@ -5,10 +5,11 @@ import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -27,7 +29,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -43,10 +44,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.journeyapps.barcodescanner.ScanContract
@@ -61,7 +65,7 @@ import ToFA.Android.whmwws.phone.security.DeviceIdentity
 
 private data class ImportedFile(val uri: Uri, val count: Int)
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ImportExportScreen(vm: AppViewModel, onBack: () -> Unit) {
     val context = LocalContext.current
@@ -258,34 +262,30 @@ fun ImportExportScreen(vm: AppViewModel, onBack: () -> Unit) {
                 Column(Modifier.padding(16.dp)) {
                     Text(tr("导出", "Export"), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
                     Spacer(Modifier.height(12.dp))
-                    FlowRow(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterHorizontally),
                     ) {
-                        FilterChip(
+                        ExportOptionChip(
+                            label = tr("唯一码", "Device code"),
                             selected = exportMode == ExportMode.UniqueCode,
-                            onClick = { exportMode = ExportMode.UniqueCode },
                             enabled = !busy,
-                            label = { Text(tr("本机唯一码", "This device's code")) },
-                        )
-                        FilterChip(
+                        ) { exportMode = ExportMode.UniqueCode }
+                        ExportOptionChip(
+                            label = tr("自定义", "Custom"),
                             selected = exportMode == ExportMode.CustomKey,
-                            onClick = { exportMode = ExportMode.CustomKey },
                             enabled = !busy,
-                            label = { Text(tr("自定义", "Custom")) },
-                        )
-                        FilterChip(
+                        ) { exportMode = ExportMode.CustomKey }
+                        ExportOptionChip(
+                            label = tr("明文", "Plaintext"),
                             selected = exportMode == ExportMode.Plain,
-                            onClick = { exportMode = ExportMode.Plain },
                             enabled = !busy,
-                            label = { Text(tr("明文", "Plaintext")) },
-                        )
-                        FilterChip(
+                        ) { exportMode = ExportMode.Plain }
+                        ExportOptionChip(
+                            label = "TXT",
                             selected = exportMode == ExportMode.Txt,
-                            onClick = { exportMode = ExportMode.Txt },
                             enabled = !busy,
-                            label = { Text("TXT") },
-                        )
+                        ) { exportMode = ExportMode.Txt }
                     }
                     when (exportMode) {
                         ExportMode.UniqueCode -> {
@@ -530,8 +530,50 @@ fun ImportExportScreen(vm: AppViewModel, onBack: () -> Unit) {
 private const val MIN_PASSWORD_LENGTH = 6
 private const val MAX_IMPORT_BYTES = 8 * 1024 * 1024
 
-/** 导出方式：本机唯一码 / 自定义密钥 / JSON 明文 / otpauth TXT 明文。 */
+/** 导出方式：唯一码 / 自定义密钥 / JSON 明文 / otpauth TXT 明文。 */
 private enum class ExportMode { UniqueCode, CustomKey, Plain, Txt }
+
+/**
+ * 导出方式胶囊：内容自适应宽度，四颗固定排在单行内。
+ * 文案保持单行、不换行，也不设置省略号，避免窄屏下被截断。
+ */
+@Composable
+private fun ExportOptionChip(
+    label: String,
+    selected: Boolean,
+    enabled: Boolean,
+    onClick: () -> Unit,
+) {
+    val background = when {
+        !enabled -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+        selected -> MaterialTheme.colorScheme.primary
+        else -> MaterialTheme.colorScheme.surfaceVariant
+    }
+    val foreground = when {
+        !enabled -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+        selected -> MaterialTheme.colorScheme.onPrimary
+        else -> MaterialTheme.colorScheme.onSurfaceVariant
+    }
+    Box(
+        modifier = Modifier
+            .height(34.dp)
+            .clip(RoundedCornerShape(percent = 50))
+            .background(background)
+            .clickable(enabled = enabled, onClick = onClick)
+            .padding(horizontal = 10.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = label,
+            color = foreground,
+            fontSize = 12.sp,
+            fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium,
+            maxLines = 1,
+            softWrap = false,
+            textAlign = TextAlign.Center,
+        )
+    }
+}
 
 /** 复用 TofaCrypto 的统一规范化（去空格/连字符、忽略大小写）。 */
 private fun TofaCryptoKey(raw: String): CharArray =

@@ -74,6 +74,7 @@ fun SettingsScreen(
     onBack: () -> Unit,
     onImportExport: () -> Unit,
     onLicenses: () -> Unit,
+    onChangelog: () -> Unit,
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -659,6 +660,37 @@ fun SettingsScreen(
             }
 
             SectionTitle(tr("关于", "About"))
+            Card(
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(onClick = onChangelog)
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Column(Modifier.weight(1f)) {
+                        Text(
+                            tr("版本更新日志", "Changelog"),
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                        Spacer(Modifier.height(4.dp))
+                        Text(
+                            tr("按版本查看更新内容", "Release notes by version"),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                    Text(">", color = MaterialTheme.colorScheme.primary)
+                }
+            }
+
+            Spacer(Modifier.height(10.dp))
+
             Card(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 shape = RoundedCornerShape(16.dp),

@@ -28,14 +28,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import ToFA.Android.whmwws.phone.AppViewModel
 import ToFA.Android.whmwws.phone.data.TotpAccount
 
-enum class Screen { LIST, ADD, SCAN_ADD, SCAN_GOOGLE, SETTINGS, IMPORT_EXPORT, TRANSFER, LICENSES, EDIT_ACCOUNT }
+enum class Screen { LIST, ADD, SCAN_ADD, SCAN_GOOGLE, SETTINGS, IMPORT_EXPORT, TRANSFER, LICENSES, CHANGELOG, EDIT_ACCOUNT }
 
 /** 页面层级深度：用于判断进入 / 退出的动画方向。 */
 private val Screen.depth: Int
     get() = when (this) {
         Screen.LIST -> 0
         Screen.ADD, Screen.SETTINGS, Screen.TRANSFER, Screen.EDIT_ACCOUNT -> 1
-        Screen.SCAN_ADD, Screen.SCAN_GOOGLE, Screen.IMPORT_EXPORT, Screen.LICENSES -> 2
+        Screen.SCAN_ADD, Screen.SCAN_GOOGLE, Screen.IMPORT_EXPORT, Screen.LICENSES, Screen.CHANGELOG -> 2
     }
 
 private sealed interface HomeDialog {
@@ -200,9 +200,12 @@ fun AppRoot(vm: AppViewModel = viewModel()) {
                 onBack = { navigateBack() },
                 onImportExport = { navigate(Screen.IMPORT_EXPORT) },
                 onLicenses = { navigate(Screen.LICENSES) },
+                onChangelog = { navigate(Screen.CHANGELOG) },
             )
 
             Screen.LICENSES -> LicensesScreen(onBack = { navigateBack() })
+
+            Screen.CHANGELOG -> ChangelogScreen(onBack = { navigateBack() })
 
             Screen.IMPORT_EXPORT -> ImportExportScreen(
                 vm = vm,

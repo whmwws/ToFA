@@ -13,9 +13,9 @@ android {
         // 手表为 Android 12（API 31），minSdk 放低以便模拟器/旧机型自测
         minSdk = 26
         targetSdk = 34
-        versionCode = 3
+        versionCode = 4
         // 版本号唯一来源：界面通过 PackageManager 读取这里的 versionName
-        versionName = "0.2.2"
+        versionName = "0.2.3"
     }
 
     buildFeatures {
