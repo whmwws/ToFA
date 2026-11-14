@@ -2,10 +2,13 @@ package ToFA.Android.whmwws.phone.ui
 
 import android.net.Uri
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -58,7 +61,7 @@ import ToFA.Android.whmwws.phone.security.DeviceIdentity
 
 private data class ImportedFile(val uri: Uri, val count: Int)
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun ImportExportScreen(vm: AppViewModel, onBack: () -> Unit) {
     val context = LocalContext.current
@@ -66,12 +69,17 @@ fun ImportExportScreen(vm: AppViewModel, onBack: () -> Unit) {
 
     val uniqueCode = remember { DeviceIdentity.current(context) }
     var exportMode by remember { mutableStateOf(ExportMode.UniqueCode) }
+    var requestedExportMode by remember { mutableStateOf(ExportMode.UniqueCode) }
+    var pendingPlainExport by remember { mutableStateOf<ExportMode?>(null) }
     var password by remember { mutableStateOf("") }
     var importKey by remember { mutableStateOf("") }
     var pendingEncrypted by remember { mutableStateOf<Pair<Uri, String>?>(null) }
     var passwordError by remember { mutableStateOf<String?>(null) }
     var imported by remember { mutableStateOf<ImportedFile?>(null) }
     var busy by remember { mutableStateOf(false) }
+
+    // 文件写入期间消费系统返回，配合模态进度层避免导出被中断。
+    BackHandler(enabled = busy) { }
 
     fun toast(text: String) = Toast.makeText(context, text, Toast.LENGTH_SHORT).show()
 
@@ -141,21 +149,20 @@ fun ImportExportScreen(vm: AppViewModel, onBack: () -> Unit) {
         }
     }
 
-    val createDocument = rememberLauncherForActivityResult(
-        ActivityResultContracts.CreateDocument("application/json"),
-    ) { uri ->
+    fun handleExportUri(uri: Uri?) {
         if (uri == null) {
             toast(I18n.pick("已取消导出", "Export cancelled"))
-            return@rememberLauncherForActivityResult
+            return
         }
         val accounts = vm.repo.accounts.value
         if (accounts.isEmpty()) {
             toast(I18n.pick("还没有密钥可导出", "No secrets to export"))
-            return@rememberLauncherForActivityResult
+            return
         }
         busy = true
+        val mode = requestedExportMode
         scope.launch {
-            val payload = when (exportMode) {
+            val payload = when (mode) {
                 ExportMode.UniqueCode ->
                     PayloadCodec.encodeEncrypted(accounts, DeviceIdentity.keyOf(DeviceIdentity.current(context)))
                 ExportMode.CustomKey -> {
@@ -168,6 +175,7 @@ fun ImportExportScreen(vm: AppViewModel, onBack: () -> Unit) {
                     PayloadCodec.encodeEncrypted(accounts, key)
                 }
                 ExportMode.Plain -> PayloadCodec.encodePlain(accounts)
+                ExportMode.Txt -> PayloadCodec.encodeOtpauthLines(accounts)
             }
             val result = withContext(Dispatchers.IO) {
                 runCatching {
@@ -181,6 +189,22 @@ fun ImportExportScreen(vm: AppViewModel, onBack: () -> Unit) {
                 toast(I18n.pick("已导出 ${accounts.size} 个密钥", "Exported ${accounts.size} secrets"))
             }
                 .onFailure { toast(it.message ?: I18n.pick("导出失败", "Export failed")) }
+        }
+    }
+
+    val createJsonDocument = rememberLauncherForActivityResult(
+        ActivityResultContracts.CreateDocument("application/json"),
+    ) { uri -> handleExportUri(uri) }
+    val createTextDocument = rememberLauncherForActivityResult(
+        ActivityResultContracts.CreateDocument("text/plain"),
+    ) { uri -> handleExportUri(uri) }
+
+    fun launchExport(mode: ExportMode) {
+        requestedExportMode = mode
+        if (mode == ExportMode.Txt) {
+            createTextDocument.launch("tofa-export.txt")
+        } else {
+            createJsonDocument.launch("tofa-export.json")
         }
     }
 
@@ -204,9 +228,9 @@ fun ImportExportScreen(vm: AppViewModel, onBack: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(tr("传递", "Transfer")) },
+                title = { Text(tr("导入导出", "Import / Export")) },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(onClick = onBack, enabled = !busy) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = tr("返回", "Back"))
                     }
                 },
@@ -234,21 +258,33 @@ fun ImportExportScreen(vm: AppViewModel, onBack: () -> Unit) {
                 Column(Modifier.padding(16.dp)) {
                     Text(tr("导出", "Export"), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
                     Spacer(Modifier.height(12.dp))
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                    ) {
                         FilterChip(
                             selected = exportMode == ExportMode.UniqueCode,
                             onClick = { exportMode = ExportMode.UniqueCode },
+                            enabled = !busy,
                             label = { Text(tr("本机唯一码", "This device's code")) },
                         )
                         FilterChip(
                             selected = exportMode == ExportMode.CustomKey,
                             onClick = { exportMode = ExportMode.CustomKey },
-                            label = { Text(tr("自定义密钥", "Custom key")) },
+                            enabled = !busy,
+                            label = { Text(tr("自定义", "Custom")) },
                         )
                         FilterChip(
                             selected = exportMode == ExportMode.Plain,
                             onClick = { exportMode = ExportMode.Plain },
+                            enabled = !busy,
                             label = { Text(tr("明文", "Plaintext")) },
+                        )
+                        FilterChip(
+                            selected = exportMode == ExportMode.Txt,
+                            onClick = { exportMode = ExportMode.Txt },
+                            enabled = !busy,
+                            label = { Text("TXT") },
                         )
                     }
                     when (exportMode) {
@@ -277,6 +313,14 @@ fun ImportExportScreen(vm: AppViewModel, onBack: () -> Unit) {
                                 color = MaterialTheme.colorScheme.error,
                             )
                         }
+                        ExportMode.Txt -> {
+                            Spacer(Modifier.height(8.dp))
+                            Text(
+                                tr("每行一条 otpauth:// 链接，包含明文密钥", "One otpauth:// link per line; contains plaintext secrets"),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.error,
+                            )
+                        }
                     }
                     Spacer(Modifier.height(12.dp))
                     Button(
@@ -292,7 +336,11 @@ fun ImportExportScreen(vm: AppViewModel, onBack: () -> Unit) {
                                 )
                                 return@Button
                             }
-                            createDocument.launch("tofa-export.json")
+                            if (exportMode == ExportMode.Plain || exportMode == ExportMode.Txt) {
+                                pendingPlainExport = exportMode
+                            } else {
+                                launchExport(exportMode)
+                            }
                         },
                         enabled = !busy && vm.repo.accounts.value.isNotEmpty(),
                         modifier = Modifier.fillMaxWidth().height(48.dp),
@@ -336,6 +384,45 @@ fun ImportExportScreen(vm: AppViewModel, onBack: () -> Unit) {
             Spacer(Modifier.height(16.dp))
             Spacer(Modifier.height(30.dp))
         }
+    }
+
+    pendingPlainExport?.let { mode ->
+        AlertDialog(
+            onDismissRequest = { pendingPlainExport = null },
+            title = { Text(tr("确认明文导出", "Confirm plaintext export")) },
+            text = {
+                Text(
+                    tr(
+                        "导出的文件包含完整明文密钥。任何获得文件的人都可能生成你的验证码，请确认仅保存在可信位置。",
+                        "The exported file contains full plaintext secrets. Anyone with the file may generate your codes. Store it only in a trusted location.",
+                    ),
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    pendingPlainExport = null
+                    launchExport(mode)
+                }) { Text(tr("继续导出", "Continue")) }
+            },
+            dismissButton = {
+                TextButton(onClick = { pendingPlainExport = null }) { Text(tr("取消", "Cancel")) }
+            },
+        )
+    }
+
+    if (busy) {
+        AlertDialog(
+            onDismissRequest = { },
+            title = { Text(tr("处理中…", "Working…")) },
+            text = {
+                Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                    CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
+                    Spacer(Modifier.width(12.dp))
+                    Text(tr("请等待文件处理完成", "Please wait for the file operation to finish"))
+                }
+            },
+            confirmButton = { },
+        )
     }
 
     pendingEncrypted?.let { pending ->
@@ -443,8 +530,8 @@ fun ImportExportScreen(vm: AppViewModel, onBack: () -> Unit) {
 private const val MIN_PASSWORD_LENGTH = 6
 private const val MAX_IMPORT_BYTES = 8 * 1024 * 1024
 
-/** 导出加密方式：本机唯一码 / 自定义密钥 / 明文。 */
-private enum class ExportMode { UniqueCode, CustomKey, Plain }
+/** 导出方式：本机唯一码 / 自定义密钥 / JSON 明文 / otpauth TXT 明文。 */
+private enum class ExportMode { UniqueCode, CustomKey, Plain, Txt }
 
 /** 复用 TofaCrypto 的统一规范化（去空格/连字符、忽略大小写）。 */
 private fun TofaCryptoKey(raw: String): CharArray =

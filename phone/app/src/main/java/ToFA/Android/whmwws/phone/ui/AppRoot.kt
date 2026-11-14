@@ -2,6 +2,7 @@ package ToFA.Android.whmwws.phone.ui
 
 import android.content.Context
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -25,15 +26,16 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ToFA.Android.whmwws.phone.AppViewModel
+import ToFA.Android.whmwws.phone.data.TotpAccount
 
-enum class Screen { LIST, ADD, SCAN_ADD, SCAN_GOOGLE, SETTINGS, IMPORT_EXPORT, TRANSFER, LICENSES }
+enum class Screen { LIST, ADD, SCAN_ADD, SCAN_GOOGLE, SETTINGS, IMPORT_EXPORT, TRANSFER, LICENSES, EDIT_ACCOUNT }
 
 /** 页面层级深度：用于判断进入 / 退出的动画方向。 */
 private val Screen.depth: Int
     get() = when (this) {
         Screen.LIST -> 0
-        Screen.ADD, Screen.SCAN_ADD, Screen.SCAN_GOOGLE,
-        Screen.SETTINGS, Screen.IMPORT_EXPORT, Screen.TRANSFER, Screen.LICENSES -> 1
+        Screen.ADD, Screen.SETTINGS, Screen.TRANSFER, Screen.EDIT_ACCOUNT -> 1
+        Screen.SCAN_ADD, Screen.SCAN_GOOGLE, Screen.IMPORT_EXPORT, Screen.LICENSES -> 2
     }
 
 private sealed interface HomeDialog {
@@ -49,6 +51,10 @@ fun AppRoot(vm: AppViewModel = viewModel()) {
     val context = LocalContext.current
     val store = vm.passwords
     var screen by remember { mutableStateOf(Screen.LIST) }
+    var backStack by remember { mutableStateOf(listOf<Screen>()) }
+    var reverseTransition by remember { mutableStateOf(false) }
+    var homeEditing by remember { mutableStateOf(false) }
+    var editAccount by remember { mutableStateOf<TotpAccount?>(null) }
     var dialog by remember { mutableStateOf<HomeDialog?>(null) }
     var locked by remember { mutableStateOf(store.isEnabled()) }
     // 首启隐私协议 → 关闭后接着提示激活信息（只在本机记录，不联网）
@@ -56,6 +62,30 @@ fun AppRoot(vm: AppViewModel = viewModel()) {
     var showActivationInfo by remember { mutableStateOf(false) }
     // 开屏隐私：关闭「启动时显示验证码」后先显示遮挡页，回前台重新遮挡
     var codesHidden by remember { mutableStateOf(!vm.showCodesOnLaunch) }
+
+    fun navigate(target: Screen) {
+        if (target == screen) return
+        backStack = backStack + screen
+        reverseTransition = false
+        screen = target
+    }
+
+    fun navigateBack() {
+        reverseTransition = true
+        if (backStack.isEmpty()) {
+            screen = Screen.LIST
+        } else {
+            val target = backStack.last()
+            backStack = backStack.dropLast(1)
+            screen = target
+        }
+    }
+
+    fun popToRoot() {
+        backStack = emptyList()
+        reverseTransition = true
+        screen = Screen.LIST
+    }
 
     // 退到后台立即重新上锁，避免最近任务里被直接看到验证码
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -90,11 +120,13 @@ fun AppRoot(vm: AppViewModel = viewModel()) {
     // 未激活时主页一直悬挂激活提示，用户操作后才收纳进设置
     val showPremiumBanner = !vm.premium.activated && !vm.premium.bannerResolved
 
+    BackHandler(enabled = screen != Screen.LIST) { navigateBack() }
+
     AnimatedContent(
         targetState = screen,
         transitionSpec = {
             // 进入 / 返回方向互为镜像：深层页面从右侧进入，返回时从右侧退出
-            val forward = targetState.depth >= initialState.depth
+            val forward = !reverseTransition && targetState.depth >= initialState.depth
             val enter = if (forward) 1 else -1
             (fadeIn(tween(220)) + slideInHorizontally(tween(260)) { enter * it / 10 }) togetherWith
                 (fadeOut(tween(160)) + slideOutHorizontally(tween(260)) { -enter * it / 10 })
@@ -109,62 +141,89 @@ fun AppRoot(vm: AppViewModel = viewModel()) {
                 qrEnabled = vm.qrEnabled,
                 codesHidden = codesHidden,
                 onRevealCodes = { codesHidden = false },
+                editing = homeEditing,
+                onEditingChange = { homeEditing = it },
                 showPremiumBanner = showPremiumBanner,
-                onAdd = { screen = Screen.ADD },
-                onSettings = { screen = Screen.SETTINGS },
-                onTransfer = { screen = Screen.TRANSFER },
+                onAdd = {
+                    homeEditing = false
+                    navigate(Screen.ADD)
+                },
+                onSettings = {
+                    homeEditing = false
+                    navigate(Screen.SETTINGS)
+                },
+                onTransfer = {
+                    homeEditing = false
+                    navigate(Screen.TRANSFER)
+                },
+                onEdit = {
+                    editAccount = it
+                    navigate(Screen.EDIT_ACCOUNT)
+                },
                 onDelete = vm::delete,
                 onMove = vm::moveAccount,
                 onDonate = { dialog = HomeDialog.Donate },
             )
 
             Screen.ADD -> AddAccountScreen(
-                onBack = { screen = Screen.LIST },
-                onScan = { screen = Screen.SCAN_ADD },
-                onGoogleImport = { screen = Screen.SCAN_GOOGLE },
+                onBack = { navigateBack() },
+                onScan = { navigate(Screen.SCAN_ADD) },
+                onGoogleImport = { navigate(Screen.SCAN_GOOGLE) },
                 onSave = {
                     vm.upsert(it)
-                    screen = Screen.LIST
+                    popToRoot()
                 },
             )
 
             Screen.SCAN_ADD -> ScanScreen(
                 mode = ScanMode.ANY,
-                onBack = { screen = Screen.LIST },
+                onBack = { navigateBack() },
                 onImported = {
                     vm.upsertAll(it)
-                    screen = Screen.LIST
+                    popToRoot()
                 },
-                onSwitchToGoogle = { screen = Screen.SCAN_GOOGLE },
+                onSwitchToGoogle = { navigate(Screen.SCAN_GOOGLE) },
             )
 
             Screen.SCAN_GOOGLE -> ScanScreen(
                 mode = ScanMode.GOOGLE_EXPORT,
-                onBack = { screen = Screen.LIST },
+                onBack = { navigateBack() },
                 onImported = {
                     vm.upsertAll(it)
-                    screen = Screen.LIST
+                    popToRoot()
                 },
                 onSwitchToGoogle = null,
             )
 
             Screen.SETTINGS -> SettingsScreen(
                 vm = vm,
-                onBack = { screen = Screen.LIST },
-                onImportExport = { screen = Screen.IMPORT_EXPORT },
-                onLicenses = { screen = Screen.LICENSES },
+                onBack = { navigateBack() },
+                onImportExport = { navigate(Screen.IMPORT_EXPORT) },
+                onLicenses = { navigate(Screen.LICENSES) },
             )
 
-            Screen.LICENSES -> LicensesScreen(onBack = { screen = Screen.SETTINGS })
+            Screen.LICENSES -> LicensesScreen(onBack = { navigateBack() })
 
             Screen.IMPORT_EXPORT -> ImportExportScreen(
                 vm = vm,
-                onBack = { screen = Screen.SETTINGS },
+                onBack = { navigateBack() },
             )
+
+            Screen.EDIT_ACCOUNT -> editAccount?.let { account ->
+                RenameAccountScreen(
+                    account = account,
+                    onBack = { navigateBack() },
+                    onSave = {
+                        vm.upsert(it)
+                        editAccount = null
+                        navigateBack()
+                    },
+                )
+            }
 
             Screen.TRANSFER -> AdbSyncScreen(
                 vm = vm,
-                onBack = { screen = Screen.LIST },
+                onBack = { navigateBack() },
             )
         }
     }
@@ -182,7 +241,8 @@ fun AppRoot(vm: AppViewModel = viewModel()) {
         HomeDialog.DonatedThanks -> DonationThanksDialog(
             onGoTransfer = {
                 dialog = null
-                screen = Screen.TRANSFER
+                homeEditing = false
+                navigate(Screen.TRANSFER)
             },
             onDismiss = { dialog = null },
         )

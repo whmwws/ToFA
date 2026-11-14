@@ -17,6 +17,10 @@ object PayloadCodec {
 
     fun encodePlain(accounts: List<TotpAccount>): String = TotpAccount.listToJson(accounts)
 
+    /** TXT 明文导出：每行一条标准 otpauth:// 链接。 */
+    fun encodeOtpauthLines(accounts: List<TotpAccount>): String =
+        accounts.joinToString("\n") { it.toOtpauthUri() }
+
     fun encodeEncrypted(accounts: List<TotpAccount>, passphrase: CharArray): String =
         TofaCrypto.encrypt(encodePlain(accounts), passphrase)
 

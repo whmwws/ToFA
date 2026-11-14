@@ -34,10 +34,9 @@ ToFA/
 
 ### 版本规则
 
-- 手机端：`p-x.y.z`，唯一来源为 `phone/app/build.gradle.kts` 的 `versionName`。
-- 手表端：`w-x.y.z`，唯一来源为 `watch-android/app/build.gradle.kts` 的 `versionName`。
-- 双端版本可以相同，也允许独立演进；Release 标签不要混用。
-- 当前发布线为 `p-0.2.0 / w-0.2.0`。
+- 双端统一使用纯语义版本号 `x.y.z`，唯一来源为各自 `app/build.gradle.kts` 的 `versionName`。
+- 手机与手表同步发布时使用同一个 Release 标签，并上传两个对应 APK。
+- 当前发布线为 `0.2.1`。
 
 ### 许可证边界
 
@@ -289,8 +288,8 @@ macOS / Linux 使用 `./gradlew`。不要并行构建两个工程。
 对最终准备上传的文件计算，而不是对中间构建产物计算：
 
 ```powershell
-Get-FileHash -Algorithm SHA256 "dist/ToFA-0.2.0-phone.apk"
-Get-FileHash -Algorithm SHA256 "dist/ToFA-0.2.0-watch.apk"
+Get-FileHash -Algorithm SHA256 "dist/ToFA-0.2.1-phone.apk"
+Get-FileHash -Algorithm SHA256 "dist/ToFA-0.2.1-watch.apk"
 ```
 
 上传后重新下载附件并复核一次。Release 文本使用 [open-source/RELEASE_TEMPLATE.md](open-source/RELEASE_TEMPLATE.md)。
@@ -299,10 +298,7 @@ Get-FileHash -Algorithm SHA256 "dist/ToFA-0.2.0-watch.apk"
 
 ## 九、创建 Release
 
-为保持双端版本清晰，建议分别创建：
-
-1. 手机标签 `p-x.y.z`，上传对应手机 APK。
-2. 手表标签 `w-x.y.z`，上传对应手表 APK。
+双端同步发布时创建统一标签 `x.y.z`，上传 `ToFA-x.y.z-phone.apk` 与 `ToFA-x.y.z-watch.apk`。
 
 每个 Release 写明：
 
@@ -330,7 +326,7 @@ Get-FileHash -Algorithm SHA256 "dist/ToFA-0.2.0-watch.apk"
 
 - 保持核心离线，不新增云账号、在线激活、统计或广告。
 - 权限、数据格式和同步行为变化时更新 `PRIVACY.md` 与 README。
-- 版本号只在实际发布时更新，保持 `p-` / `w-` 规则。
+- 版本号只在实际发布时更新，保持双端统一的纯语义版本号规则。
 - 手机与手表的浅色、深色、圆屏、长文本和隐私开关都要回归验证。
 
 ### 依赖与许可证

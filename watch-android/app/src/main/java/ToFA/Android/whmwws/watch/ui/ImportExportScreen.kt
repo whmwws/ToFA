@@ -1,5 +1,6 @@
 package ToFA.Android.whmwws.watch.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.focusable
@@ -83,6 +84,25 @@ fun ImportExportScreen(
     var exportCustom by remember { mutableStateOf(false) }
     var confirmClearFiles by remember { mutableStateOf<Int?>(null) }
     var askRemoveImported by remember { mutableStateOf(false) }
+
+    // 系统返回与页面顶栏保持同一层级：先关闭弹层/密码页，最后才回菜单。
+    BackHandler {
+        when {
+            working -> Unit
+            askingPassword -> {
+                askingPassword = false
+                passwordError = null
+            }
+            exportCustom -> exportCustom = false
+            askRemoveImported -> {
+                askRemoveImported = false
+                pendingFile = null
+            }
+            confirmClearFiles != null -> confirmClearFiles = null
+            showExportChooser -> showExportChooser = false
+            else -> onBack()
+        }
+    }
 
     fun exportFileCount(): Int = File(exportDir).listFiles()?.size ?: 0
 

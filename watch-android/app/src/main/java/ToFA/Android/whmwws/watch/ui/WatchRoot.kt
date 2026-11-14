@@ -3,6 +3,7 @@ package ToFA.Android.whmwws.watch.ui
 import android.content.Context
 import android.util.Log
 import android.view.HapticFeedbackConstants
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -296,6 +297,21 @@ fun WatchRoot(repository: AccountRepository) {
         secured = false
         screen = WatchScreen.Main
         wipeNotice = true
+    }
+
+    BackHandler(enabled = screen != WatchScreen.Main && screen != WatchScreen.Lock) {
+        if (!(screen == WatchScreen.Pad && padBusy)) {
+            screen = when (screen) {
+                WatchScreen.Menu -> WatchScreen.Main
+                WatchScreen.Manage, WatchScreen.Transfer, WatchScreen.UniqueCode, WatchScreen.Settings -> WatchScreen.Menu
+                WatchScreen.Add -> addReturn
+                WatchScreen.EditAccount -> WatchScreen.Manage
+                WatchScreen.Theme, WatchScreen.Password, WatchScreen.Donate, WatchScreen.Licenses -> WatchScreen.Settings
+                WatchScreen.Pad -> WatchScreen.Password
+                WatchScreen.Qr -> WatchScreen.Main
+                WatchScreen.Main, WatchScreen.Lock -> screen
+            }
+        }
     }
 
     Surface(modifier = Modifier.fillMaxSize(), color = WatchColors.Background) {
@@ -607,6 +623,19 @@ fun WatchRoot(repository: AccountRepository) {
                 WatchScreen.UniqueCode -> UniqueCodeScreen(onBack = { screen = WatchScreen.Menu })
             }
         }
+            }
+        }
+
+        // 全局模态提示优先于页面返回，避免系统返回在遮挡层后面切换页面。
+        BackHandler(enabled = wipeNotice || notice != null || privacyNotice != 0) {
+            when {
+                wipeNotice -> wipeNotice = false
+                notice != null -> {
+                    notice = null
+                    pendingPremiumAction = null
+                }
+                privacyNotice == 2 -> privacyNotice = 0
+                // 首启隐私协议必须明确同意，系统返回不跳过。
             }
         }
 

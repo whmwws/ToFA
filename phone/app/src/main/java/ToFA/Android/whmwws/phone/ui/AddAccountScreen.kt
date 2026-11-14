@@ -247,3 +247,66 @@ fun AddAccountScreen(
         }
     }
 }
+
+/** 与手表端密钥管理一致：只修改密钥名和账户名，其余 OTP 参数保持不变。 */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun RenameAccountScreen(
+    account: TotpAccount,
+    onBack: () -> Unit,
+    onSave: (TotpAccount) -> Unit,
+) {
+    var name by remember(account.id) { mutableStateOf(account.issuer) }
+    var accountName by remember(account.id) { mutableStateOf(account.account) }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(tr("修改名称", "Rename")) },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = tr("返回", "Back"))
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                ),
+            )
+        },
+        containerColor = MaterialTheme.colorScheme.background,
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(padding)
+                .padding(horizontal = 20.dp)
+                .verticalScroll(rememberScrollState()),
+        ) {
+            Spacer(Modifier.height(12.dp))
+            OutlinedTextField(
+                value = name,
+                onValueChange = { name = it },
+                label = { Text(tr("密钥名（可选）", "Key name (optional)")) },
+                placeholder = { Text(tr("未命名", "Unnamed")) },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+            )
+            Spacer(Modifier.height(12.dp))
+            OutlinedTextField(
+                value = accountName,
+                onValueChange = { accountName = it },
+                label = { Text(tr("账户名（可选）", "Account name (optional)")) },
+                placeholder = { Text(tr("邮箱 / 用户名", "Email / username")) },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+            )
+            Spacer(Modifier.height(24.dp))
+            Button(
+                onClick = {
+                    onSave(account.copy(issuer = name.trim(), account = accountName.trim()))
+                },
+                modifier = Modifier.fillMaxWidth().height(50.dp),
+            ) { Text(tr("保存", "Save")) }
+        }
+    }
+}

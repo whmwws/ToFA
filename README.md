@@ -20,8 +20,8 @@ ToFA 是一个纯本地、可离线的两步验证（TOTP）工具，面向想�
 
 | 目录 | 说明 | 版本号规则 |
 | --- | --- | --- |
-| [`phone/`](phone) | Android 手机端（Jetpack Compose） | `p-0.x.y` |
-| [`watch-android/`](watch-android) | Android 手表端（Jetpack Compose，支持圆屏/方屏） | `w-0.x.y` |
+| [`phone/`](phone) | Android 手机端（Jetpack Compose） | `0.x.y` |
+| [`watch-android/`](watch-android) | Android 手表端（Jetpack Compose，支持圆屏/方屏） | `0.x.y` |
 | [`open-source/`](open-source) | 贡献、安全、隐私、许可、发布材料与平台模板 | — |
 | `watch/`、`phone-hmos/` | 早期 HarmonyOS 实验工程，不参与当前构建或双端发布 | — |
 
@@ -33,7 +33,7 @@ ToFA 是一个纯本地、可离线的两步验证（TOTP）工具，面向想�
 
 - TOTP 账号增删改、拖动排序、卡片显示名档位
 - 扫码 / 相册识别、手动输入、`otpauth://` 与通用导出格式导入
-- 导出可加密（自定义密码 / 本机唯一码），导入自动识别
+- 导出可加密（自定义密码 / 本机唯一码），也可导出每行一个 `otpauth://` 链接的 TXT；导入自动识别
 - 应用锁、连续错误自毁、紧急密码、最近任务隐私、禁止截屏
 - 深浅色与主题色、界面语言（简中 / English / 繁體中文 / 日本語，可导入离线语言包）
 - 通过无线调试把密钥、激活文件、主题色、语言推送到手表，并可安装/启动手表端

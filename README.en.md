@@ -20,8 +20,8 @@ ToFA is a fully local, offline two-factor authentication (TOTP) tool for people 
 
 | Directory | Description | Version rule |
 | --- | --- | --- |
-| [`phone/`](phone) | Android phone app (Jetpack Compose) | `p-0.x.y` |
-| [`watch-android/`](watch-android) | Android watch app (Jetpack Compose, round and square screens) | `w-0.x.y` |
+| [`phone/`](phone) | Android phone app (Jetpack Compose) | `0.x.y` |
+| [`watch-android/`](watch-android) | Android watch app (Jetpack Compose, round and square screens) | `0.x.y` |
 | [`open-source/`](open-source) | Contribution, security, privacy, licensing, release material and platform templates | — |
 | `watch/`, `phone-hmos/` | Early HarmonyOS experiments; not part of the current build or release | — |
 
@@ -33,7 +33,7 @@ The single source of truth for the version is `versionName` in each `app/build.g
 
 - Add, edit, delete and drag-reorder TOTP accounts; configurable display-name style
 - Scan a QR code or pick an image, manual entry, import from `otpauth://` and common export formats
-- Encrypted export (custom password or device-unique key); imports are auto-detected
+- Encrypted export (custom password or device-unique key), or a TXT file with one `otpauth://` URI per line; imports are auto-detected
 - App lock, wipe after repeated failures, emergency password, recent-task privacy, screenshot blocking
 - Light/dark themes and accent colors; UI language (Simplified Chinese / English / Traditional Chinese / Japanese, with offline language pack import)
 - Push secrets, activation file, theme color and language to the watch over wireless debugging; install and launch the watch app from the phone

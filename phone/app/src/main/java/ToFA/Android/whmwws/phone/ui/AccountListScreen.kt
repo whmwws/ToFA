@@ -1,5 +1,6 @@
 package ToFA.Android.whmwws.phone.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -34,12 +35,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material.icons.filled.QrCode2
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.SwapVert
 import androidx.compose.material3.Card
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -85,7 +86,7 @@ import kotlinx.coroutines.launch
 
 /**
  * 手机端主页：
- * 左侧 ToFA 标志，右侧传递 / 设置；账号卡片支持拖动排序；
+ * 左侧 ToFA 标志，右侧编辑 / 传递 / 设置；编辑模式支持改名、删除与拖动排序；
  * 开启复制后轻点卡片复制 6 位动态码，开启二维码后卡片右侧出现二维码按钮。
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -97,10 +98,13 @@ fun AccountListScreen(
     qrEnabled: Boolean,
     codesHidden: Boolean,
     onRevealCodes: () -> Unit,
+    editing: Boolean,
+    onEditingChange: (Boolean) -> Unit,
     showPremiumBanner: Boolean,
     onAdd: () -> Unit,
     onSettings: () -> Unit,
     onTransfer: () -> Unit,
+    onEdit: (TotpAccount) -> Unit,
     onDelete: (String) -> Unit,
     onMove: (Int, Int) -> Unit,
     onDonate: () -> Unit,
@@ -110,6 +114,7 @@ fun AccountListScreen(
     val snackbar = remember { SnackbarHostState() }
     var now by remember { mutableLongStateOf(System.currentTimeMillis()) }
     var qrAccount by remember { mutableStateOf<TotpAccount?>(null) }
+    var pendingDelete by remember { mutableStateOf<TotpAccount?>(null) }
     var draggingId by remember { mutableStateOf<String?>(null) }
     var dragOffset by remember { mutableFloatStateOf(0f) }
     val currentAccounts by rememberUpdatedState(accounts)
@@ -122,6 +127,8 @@ fun AccountListScreen(
             delay(300)
         }
     }
+
+    BackHandler(enabled = editing) { onEditingChange(false) }
 
     Scaffold(
         topBar = {
@@ -148,6 +155,9 @@ fun AccountListScreen(
                     }
                 },
                 actions = {
+                    TextButton(onClick = { onEditingChange(!editing) }) {
+                        Text(if (editing) tr("完成", "Done") else tr("编辑", "Edit"))
+                    }
                     IconButton(onClick = onTransfer) {
                         Icon(Icons.Filled.SwapVert, contentDescription = tr("传递", "Transfer"))
                     }
@@ -161,8 +171,10 @@ fun AccountListScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = onAdd) {
-                Icon(Icons.Filled.Add, contentDescription = tr("添加密钥", "Add key"))
+            if (!editing) {
+                FloatingActionButton(onClick = onAdd) {
+                    Icon(Icons.Filled.Add, contentDescription = tr("添加密钥", "Add key"))
+                }
             }
         },
         snackbarHost = { SnackbarHost(snackbar) },
@@ -191,8 +203,8 @@ fun AccountListScreen(
                         Spacer(Modifier.height(8.dp))
                         Text(
                             tr(
-                                "点右下角 + 手动输入密钥、扫描 otpauth 二维码，\n或从设置 → 传递 迁移",
-                                "Tap + at the bottom right to enter a key, scan an otpauth QR code,\nor migrate from Settings → Transfer",
+                                "点右下角 + 手动输入密钥、扫描 otpauth 二维码，\n或从设置 → 导入导出 迁移",
+                                "Tap + at the bottom right to enter a key, scan an otpauth QR code,\nor migrate from Settings → Import / Export",
                             ),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -232,6 +244,9 @@ fun AccountListScreen(
                         copyEnabled = copyEnabled,
                         qrEnabled = qrEnabled,
                         dragging = dragging,
+                        editing = editing,
+                        deleteEnabled = pendingDelete == null,
+                        onEdit = { onEdit(account) },
                         onCopy = {
                             // TOTP 在验证码刷新时清空；HOTP 不刷新，沿用 30 秒兜底
                             val clearAfterMs = if (account.type == "HOTP") 30_000L else remain * 1_000L
@@ -253,15 +268,15 @@ fun AccountListScreen(
                             }
                         },
                         onShowQr = { qrAccount = account },
-                        onDelete = { onDelete(account.id) },
+                        onDelete = { pendingDelete = account },
                         modifier = Modifier
                             .animateItem(
                                 fadeInSpec = null,
                                 fadeOutSpec = null,
                                 placementSpec = tween(durationMillis = 220, easing = LinearEasing),
                             )
-                            .pointerInput(account.id) {
-                            detectDragGesturesAfterLongPress(
+                            .pointerInput(account.id, editing) {
+                            if (editing) detectDragGesturesAfterLongPress(
                                 onDragStart = {
                                     draggingId = account.id
                                     dragOffset = 0f
@@ -297,10 +312,10 @@ fun AccountListScreen(
                 }
                 item(key = "footer") {
                     Text(
-                        text = if (copyEnabled) {
-                            tr("轻点复制 · 长按拖动排序", "Tap to copy · long-press to reorder")
-                        } else {
-                            tr("长按拖动排序", "Long-press to reorder")
+                        text = when {
+                            editing -> tr("点按修改 · 长按拖动排序", "Tap to edit · long-press to reorder")
+                            copyEnabled -> tr("轻点复制", "Tap to copy")
+                            else -> tr("点按右上角编辑管理密钥", "Use Edit above to manage keys")
                         },
                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                         fontSize = 11.sp,
@@ -332,6 +347,23 @@ fun AccountListScreen(
     qrAccount?.let { account ->
         AccountQrDialog(account = account, onDismiss = { qrAccount = null })
     }
+
+    pendingDelete?.let { account ->
+        AlertDialog(
+            onDismissRequest = { pendingDelete = null },
+            title = { Text(tr("删除密钥？", "Delete key?")) },
+            text = { Text(account.label.ifBlank { tr("未命名", "Unnamed") }) },
+            confirmButton = {
+                TextButton(onClick = {
+                    onDelete(account.id)
+                    pendingDelete = null
+                }) { Text(tr("删除", "Delete"), color = MaterialTheme.colorScheme.error) }
+            },
+            dismissButton = {
+                TextButton(onClick = { pendingDelete = null }) { Text(tr("取消", "Cancel")) }
+            },
+        )
+    }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -346,6 +378,9 @@ private fun AccountCard(
     copyEnabled: Boolean,
     qrEnabled: Boolean,
     dragging: Boolean,
+    editing: Boolean,
+    deleteEnabled: Boolean,
+    onEdit: () -> Unit,
     onCopy: () -> Unit,
     onShowQr: () -> Unit,
     onDelete: () -> Unit,
@@ -355,7 +390,10 @@ private fun AccountCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .clickable(enabled = copyEnabled, onClick = onCopy),
+            .clickable(
+                enabled = editing || copyEnabled,
+                onClick = { if (editing) onEdit() else onCopy() },
+            ),
         shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(
             containerColor = if (dragging) {
@@ -366,23 +404,9 @@ private fun AccountCard(
         ),
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(start = 4.dp, end = 10.dp, top = 10.dp, bottom = 12.dp),
+            modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 10.dp, top = 10.dp, bottom = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            // 拖动把手：仅作视觉提示，长按拖动由整张卡片统一处理，避免两个手势竞争
-            Box(
-                modifier = Modifier
-                    .width(34.dp)
-                    .height(76.dp),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(
-                    Icons.Filled.DragHandle,
-                    contentDescription = tr("拖动排序", "Reorder"),
-                    tint = if (dragging) accent else MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-
             Column(modifier = Modifier.weight(1f)) {
                 val unnamed = tr("未命名", "Unnamed")
                 val title = when (displayNameMode) {
@@ -447,7 +471,7 @@ private fun AccountCard(
                 )
             }
 
-            if (qrEnabled) {
+            if (qrEnabled && !editing) {
                 IconButton(onClick = onShowQr) {
                     Icon(
                         Icons.Filled.QrCode2,
@@ -456,12 +480,14 @@ private fun AccountCard(
                     )
                 }
             }
-            IconButton(onClick = onDelete) {
-                Icon(
-                    Icons.Filled.Delete,
-                    contentDescription = tr("删除", "Delete"),
-                    tint = MaterialTheme.colorScheme.error,
-                )
+            if (editing) {
+                IconButton(onClick = onDelete, enabled = deleteEnabled) {
+                    Icon(
+                        Icons.Filled.Delete,
+                        contentDescription = tr("删除", "Delete"),
+                        tint = MaterialTheme.colorScheme.error,
+                    )
+                }
             }
         }
     }

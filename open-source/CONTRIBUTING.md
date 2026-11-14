@@ -6,8 +6,8 @@
 
 当前维护的工程：
 
-- `phone/`：Android 手机端，版本号为 `p-x.y.z`。
-- `watch-android/`：Android 手表端，版本号为 `w-x.y.z`。
+- `phone/`：Android 手机端，与手表端统一使用纯语义版本号 `x.y.z`。
+- `watch-android/`：Android 手表端，与手机端统一使用纯语义版本号 `x.y.z`。
 
 `watch/` 与 `phone-hmos/` 是早期实验工程，不属于当前双端发布范围。不要为它们新增构建产物或依赖。
 

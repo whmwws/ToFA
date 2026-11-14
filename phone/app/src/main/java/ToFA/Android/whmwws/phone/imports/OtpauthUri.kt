@@ -4,6 +4,22 @@ import android.net.Uri
 import ToFA.Android.whmwws.phone.data.TotpAccount
 import ToFA.Android.whmwws.phone.otp.Base32
 import ToFA.Android.whmwws.phone.ui.I18n
+import java.net.URLEncoder
+
+/** 把账号编码成标准 otpauth:// 链接，供 TXT 导出与二维码迁移复用。 */
+fun TotpAccount.toOtpauthUri(): String {
+    val label = if (issuer.isBlank()) account else "$issuer:$account".trim(':')
+    val path = URLEncoder.encode(label, "UTF-8").replace("+", "%20")
+    val params = buildString {
+        append("secret=").append(secret)
+        if (issuer.isNotBlank()) append("&issuer=").append(URLEncoder.encode(issuer, "UTF-8").replace("+", "%20"))
+        append("&algorithm=").append(algorithm)
+        append("&digits=").append(digits)
+        append("&period=").append(period)
+        if (type == "HOTP") append("&counter=").append(counter)
+    }
+    return "otpauth://${type.lowercase()}/$path?$params"
+}
 
 /** 解析标准 otpauth:// 二维码 / 链接（Google Authenticator、各家网站通用格式）。 */
 object OtpauthUri {

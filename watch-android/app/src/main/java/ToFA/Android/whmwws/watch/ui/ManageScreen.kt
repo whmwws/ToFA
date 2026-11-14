@@ -1,5 +1,6 @@
 package ToFA.Android.whmwws.watch.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
@@ -70,6 +71,8 @@ fun ManageScreen(
     val thresholdPx = with(density) { 26.dp.toPx() }
     val currentAccounts by rememberUpdatedState(accounts)
     val listState = rememberLazyListState()
+
+    BackHandler(enabled = pendingDelete != null) { pendingDelete = null }
 
     Box(modifier = Modifier.fillMaxSize().watchRotaryBounce("manage")) {
         Column(

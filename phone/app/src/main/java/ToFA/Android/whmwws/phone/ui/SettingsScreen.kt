@@ -130,7 +130,7 @@ fun SettingsScreen(
             ) {
                 Column(Modifier.padding(vertical = 4.dp)) {
                     SettingsActionRow(
-                        title = tr("传递", "Transfer"),
+                        title = tr("导入导出", "Import / Export"),
                         desc = tr(
                             "导出可选加密，导入自动识别",
                             "Optional encryption on export; auto-detect on import",

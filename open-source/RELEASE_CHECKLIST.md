@@ -4,8 +4,8 @@
 
 ## 1. 版本与范围
 
-- [ ] 手机 `phone/app/build.gradle.kts` 的 `versionName` 符合 `p-x.y.z`。
-- [ ] 手表 `watch-android/app/build.gradle.kts` 的 `versionName` 符合 `w-x.y.z`。
+- [ ] 手机 `phone/app/build.gradle.kts` 的 `versionName` 符合 `x.y.z`。
+- [ ] 手表 `watch-android/app/build.gradle.kts` 的 `versionName` 与手机一致。
 - [ ] 未误改早期 HarmonyOS 实验工程，发布范围仅为 `phone/` 与 `watch-android/`。
 - [ ] [CHANGELOG.md](CHANGELOG.md) 已更新，日期和双端版本正确。
 - [ ] 官网仍为 `https://whmwws.icu/tools/ToFA`，应用内激活说明使用 `/activate` 的展示规则保持一致。
@@ -57,7 +57,7 @@
 - [ ] APK 文件名与版本对应，未上传 `.idsig`、构建缓存或本地配置。
 - [ ] 已生成并在 Release 中公布每个 APK 的 SHA-256。
 - [ ] Release 注明最低 Android 版本、构建类型、签名状态和验证结果。
-- [ ] 手机与手表分别使用 `p-x.y.z`、`w-x.y.z` 标签，未混淆版本。
+- [ ] 手机与手表 APK 使用统一的 `x.y.z` Release 标签，未混淆版本。
 - [ ] 下载 Release 附件后再次核对 SHA-256，并做一次安装验证。
 
 ## 8. 发布后

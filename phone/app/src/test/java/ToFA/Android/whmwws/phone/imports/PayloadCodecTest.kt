@@ -22,6 +22,17 @@ class PayloadCodecTest {
     }
 
     @Test
+    fun otpauthTextContainsOneLinkPerAccount() {
+        val lines = PayloadCodec.encodeOtpauthLines(accounts).lines()
+        assertEquals(2, lines.size)
+        assertEquals(
+            "otpauth://totp/GitHub%3Aa%40b.c?secret=JBSWY3DPEHPK3PXP&issuer=GitHub&algorithm=SHA1&digits=6&period=30",
+            lines[0],
+        )
+        assertTrue(lines[1].startsWith("otpauth://totp/Google%3Ax%40y.z?secret=GEZDGNBVGY3TQOJQ"))
+    }
+
+    @Test
     fun legacyWireJsonStillImports() {
         val legacy = """{"v":1,"ty":"acct","accounts":[{"i":"1","s":"GitHub","a":"a@b.c","k":"JBSWY3DPEHPK3PXP","al":"SHA1","d":6,"p":30,"t":"TOTP","c":0}]}"""
         val decoded = PayloadCodec.decode(legacy)
