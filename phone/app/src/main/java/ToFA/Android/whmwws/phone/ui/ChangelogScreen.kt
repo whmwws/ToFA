@@ -45,6 +45,20 @@ private data class ChangelogRelease(
  */
 private val ToFAChangelog = listOf(
     ChangelogRelease(
+        version = "0.2.5",
+        date = "2026-11-14",
+        items = listOf(
+            ChangelogItem(
+                "手表长按菜单的版本号移到页面最底部贴底显示，不再与上方提示文本挤在一起。",
+                "On the watch long-press menu the version now sits at the very bottom, clear of the hints above.",
+            ),
+            ChangelogItem(
+                "圆屏 / 方屏布局、弦长内边距与进场动画保持不变。",
+                "Round and square layouts, chord padding and entry animations stay unchanged.",
+            ),
+        ),
+    ),
+    ChangelogRelease(
         version = "0.2.4",
         date = "2026-11-14",
         items = listOf(

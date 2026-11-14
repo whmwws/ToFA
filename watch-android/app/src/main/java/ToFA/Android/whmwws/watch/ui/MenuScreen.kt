@@ -129,22 +129,13 @@ private fun WatchRowColumn(
             // 固定锚点计算弦长：逐帧测量会与提示文本换行形成反馈环，进场缩放时抽搐
             modifier = Modifier
                 .fillMaxWidth()
-                .bottomAnchorEdgePadding(anchorFromBottom = 22.dp)
-                .padding(bottom = 2.dp),
+                .bottomAnchorEdgePadding(anchorFromBottom = 18.dp)
+                .padding(top = 4.dp, bottom = 2.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            // 版本号 / 官网 / 返回提示三行紧挨着排，靠行高与 0 间距收紧，
-            // 圆屏底部弦长很窄，仍留两行余量避免折行后被裁切。
+            // 官网 / 返回提示 / 版本号三行 0 间距、各自收紧行高；
+            // 版本号单独压在最底一行，避免与上方内容挤在一起。
             verticalArrangement = Arrangement.spacedBy(0.dp),
         ) {
-            Text(
-                text = versionName,
-                color = WatchColors.TextDim,
-                fontSize = 9.sp,
-                lineHeight = 10.sp,
-                fontWeight = FontWeight.Medium,
-                maxLines = 1,
-                textAlign = TextAlign.Center,
-            )
             Text(
                 // 地址固定展示，窄圆屏下允许折行，绝不省略号截断
                 text = "whmwws.icu/tools/ToFA",
@@ -162,6 +153,17 @@ private fun WatchRowColumn(
                 lineHeight = 11.sp,
                 fontWeight = FontWeight.Medium,
                 maxLines = 2,
+                textAlign = TextAlign.Center,
+            )
+            // 版本号放到页面最底部：信息量最低、字数最少，贴底既不会被上方内容挤压，
+            // 居中单行也比两行提示更窄，不会碰到圆屏底部的弧边。
+            Text(
+                text = versionName,
+                color = WatchColors.TextDim,
+                fontSize = 9.sp,
+                lineHeight = 10.sp,
+                fontWeight = FontWeight.Medium,
+                maxLines = 1,
                 textAlign = TextAlign.Center,
             )
         }

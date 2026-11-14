@@ -6,12 +6,12 @@
 
 Gitee 是本项目的主发布渠道，国内下载速度快，附件与 Release 说明同时更新：
 
-- [ToFA 0.2.4 发布页](https://gitee.com/whmwws/ToFA/releases/tag/0.2.4)
-- [手机端 APK（0.2.4）](https://gitee.com/whmwws/ToFA/releases/download/0.2.4/ToFA-0.2.4-phone.apk)
-- [手表端 APK（0.2.4）](https://gitee.com/whmwws/ToFA/releases/download/0.2.4/ToFA-0.2.4-watch.apk)
-- [韩语语言包](https://gitee.com/whmwws/ToFA/releases/download/0.2.4/ToFA-lang-ko.json)
-- [德语语言包](https://gitee.com/whmwws/ToFA/releases/download/0.2.4/ToFA-lang-de.json)
-- [法语语言包](https://gitee.com/whmwws/ToFA/releases/download/0.2.4/ToFA-lang-fr.json)
+- [ToFA 0.2.5 发布页](https://gitee.com/whmwws/ToFA/releases/tag/0.2.5)
+- [手机端 APK（0.2.5）](https://gitee.com/whmwws/ToFA/releases/download/0.2.5/ToFA-0.2.5-phone.apk)
+- [手表端 APK（0.2.5）](https://gitee.com/whmwws/ToFA/releases/download/0.2.5/ToFA-0.2.5-watch.apk)
+- [韩语语言包](https://gitee.com/whmwws/ToFA/releases/download/0.2.5/ToFA-lang-ko.json)
+- [德语语言包](https://gitee.com/whmwws/ToFA/releases/download/0.2.5/ToFA-lang-de.json)
+- [法语语言包](https://gitee.com/whmwws/ToFA/releases/download/0.2.5/ToFA-lang-fr.json)
 
 语言包下载后在「设置 → 语言 → 导入语言包（JSON）」导入，手机与手表都可使用；简体中文、English、繁體中文、日本語已内置，无需下载。
 
