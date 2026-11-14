@@ -1,8 +1,12 @@
 # ToFA
 
+[**中文**](README.md) ・ [English](README.en.md)
+
 离线 TOTP 双端验证器：Android 手机端 + Android 手表端，密钥只保存在本机，不需要账号、不联网也能用。
 
-官网：<https://whmwws.icu/tools/ToFA> ・ 激活器：<https://whmwws.icu/tools/ToFA/activate.html>
+仓库镜像：Gitee <https://gitee.com/whmwws/ToFA> ・ GitHub <https://github.com/whmwws/ToFA>
+
+官网：<https://whmwws.icu/tools/ToFA> ・ 激活器：<https://whmwws.icu/tools/ToFA/activate>
 
 ## 定位
 
@@ -91,8 +95,12 @@ sdk.dir=/path/to/Android/Sdk
 
 ---
 
-## English (short)
+## English
+
+Full English documentation: [README.en.md](README.en.md).
 
 ToFA is an offline TOTP authenticator for Android phones and Android watches. There is no account, telemetry, or internet backend. The phone app imports, encrypts and exports keys, and can push keys, theme, and language packs to the watch over a user-enabled local adb connection. Licensed under Apache-2.0.
 
-Website: <https://whmwws.icu/tools/ToFA> · Activator: <https://whmwws.icu/tools/ToFA/activate.html>
+Mirrors: Gitee <https://gitee.com/whmwws/ToFA> · GitHub <https://github.com/whmwws/ToFA>
+
+Website: <https://whmwws.icu/tools/ToFA> · Activator: <https://whmwws.icu/tools/ToFA/activate>
