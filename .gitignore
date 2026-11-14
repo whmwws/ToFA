@@ -63,3 +63,5 @@ watch/.codegenie/
 # DevEco Studio AppAnalyzer 本地工具缓存（每个开发者本机重新生成）
 .appanalyzer/
 **/.appanalyzer/
+# 本机签名材料生成脚本，只留在本地，不进入公开仓库
+watch/gen_sign_material.cjs

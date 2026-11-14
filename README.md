@@ -6,7 +6,7 @@
 
 仓库镜像：Gitee <https://gitee.com/whmwws/ToFA> ・ GitHub <https://github.com/whmwws/ToFA>
 
-官网：<https://whmwws.icu/tools/ToFA> ・ 激活器：<https://whmwws.icu/tools/ToFA/activate>
+官网：<https://whmwws.icu/tools/ToFA> ・ 激活器：<https://whmwws.icu/tools/ToFA/activate> ・ 捐赠：<https://whmwws.icu/tools/ToFA/donate>
 
 ## 定位
 
