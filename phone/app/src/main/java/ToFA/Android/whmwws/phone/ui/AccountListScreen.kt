@@ -86,7 +86,7 @@ import kotlinx.coroutines.launch
 
 /**
  * 手机端主页：
- * 左侧 ToFA 标志，右侧编辑 / 传递 / 设置；编辑模式支持改名、删除与拖动排序；
+ * 左侧 ToFA 标志，右侧编辑 / 传递 / 设置；编辑模式支持查看只读密钥、改名、删除与拖动排序；
  * 开启复制后轻点卡片复制 6 位动态码，开启二维码后卡片右侧出现二维码按钮。
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -313,7 +313,7 @@ fun AccountListScreen(
                 item(key = "footer") {
                     Text(
                         text = when {
-                            editing -> tr("点按修改 · 长按拖动排序", "Tap to edit · long-press to reorder")
+                            editing -> tr("点按查看密钥或改名 · 长按拖动排序", "Tap to view key or rename · hold to reorder")
                             copyEnabled -> tr("轻点复制", "Tap to copy")
                             else -> tr("点按右上角编辑管理密钥", "Use Edit above to manage keys")
                         },

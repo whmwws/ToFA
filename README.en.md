@@ -6,9 +6,11 @@ An offline TOTP authenticator for Android phones and Android watches. Secrets ne
 
 ## Download
 
-**[Download ToFA 0.2.1 (Release)](https://github.com/whmwws/ToFA/releases/tag/0.2.1)**
+**[Download ToFA 0.2.2 (Release)](https://github.com/whmwws/ToFA/releases/tag/0.2.2)**
 
-[Phone APK](https://github.com/whmwws/ToFA/releases/download/0.2.1/ToFA-0.2.1-phone.apk) · [Watch APK](https://github.com/whmwws/ToFA/releases/download/0.2.1/ToFA-0.2.1-watch.apk)
+[Phone APK](https://github.com/whmwws/ToFA/releases/download/0.2.2/ToFA-0.2.2-phone.apk) · [Watch APK](https://github.com/whmwws/ToFA/releases/download/0.2.2/ToFA-0.2.2-watch.apk)
+
+Gitee release: <https://gitee.com/whmwws/ToFA/releases/tag/0.2.2>
 
 Website: <https://whmwws.icu/tools/ToFA> ・ Activator: <https://whmwws.icu/tools/ToFA/activate> ・ Donate: <https://whmwws.icu/tools/ToFA/donate>
 

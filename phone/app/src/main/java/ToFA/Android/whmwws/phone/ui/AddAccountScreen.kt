@@ -1,5 +1,7 @@
 package ToFA.Android.whmwws.phone.ui
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,12 +10,15 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Upload
 import androidx.compose.material3.Button
@@ -25,6 +30,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -32,15 +39,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import ToFA.Android.whmwws.phone.data.TotpAccount
 import ToFA.Android.whmwws.phone.otp.Base32
+import ToFA.Android.whmwws.phone.security.ClipboardGuard
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -248,7 +263,7 @@ fun AddAccountScreen(
     }
 }
 
-/** 与手表端密钥管理一致：只修改密钥名和账户名，其余 OTP 参数保持不变。 */
+/** 与手表端密钥管理一致：只修改密钥名和账户名，其余 OTP 参数保持不变；密钥本身只读展示，点按可复制。 */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RenameAccountScreen(
@@ -258,6 +273,11 @@ fun RenameAccountScreen(
 ) {
     var name by remember(account.id) { mutableStateOf(account.issuer) }
     var accountName by remember(account.id) { mutableStateOf(account.account) }
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val snackbar = remember { SnackbarHostState() }
+    val secretLabel = tr("ToFA 密钥", "ToFA secret")
+    val secretCopiedHint = tr("已复制密钥，30 秒后自动清空剪贴板", "Secret copied — clears in 30 seconds")
 
     Scaffold(
         topBar = {
@@ -273,6 +293,7 @@ fun RenameAccountScreen(
                 ),
             )
         },
+        snackbarHost = { SnackbarHost(snackbar) },
         containerColor = MaterialTheme.colorScheme.background,
     ) { padding ->
         Column(
@@ -299,6 +320,55 @@ fun RenameAccountScreen(
                 placeholder = { Text(tr("邮箱 / 用户名", "Email / username")) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
+            )
+            Spacer(Modifier.height(18.dp))
+            Text(
+                text = tr("密钥（只读）", "Secret (read-only)"),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Spacer(Modifier.height(6.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .clickable {
+                        val copied = ClipboardGuard.copy(
+                            context,
+                            secretLabel,
+                            account.secret,
+                            30_000L,
+                        )
+                        if (copied) {
+                            scope.launch { snackbar.showSnackbar(secretCopiedHint) }
+                        }
+                    }
+                    .padding(horizontal = 14.dp, vertical = 14.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = account.secret.chunked(4).joinToString(" "),
+                    fontFamily = FontFamily.Monospace,
+                    fontSize = 14.sp,
+                    lineHeight = 20.sp,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f),
+                )
+                Spacer(Modifier.width(8.dp))
+                Icon(
+                    Icons.Filled.ContentCopy,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(18.dp),
+                )
+            }
+            Spacer(Modifier.height(6.dp))
+            Text(
+                text = tr("只读，不可修改；点按复制", "Read-only; tap to copy"),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Spacer(Modifier.height(24.dp))
             Button(

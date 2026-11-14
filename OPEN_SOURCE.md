@@ -36,7 +36,7 @@ ToFA/
 
 - 双端统一使用纯语义版本号 `x.y.z`，唯一来源为各自 `app/build.gradle.kts` 的 `versionName`。
 - 手机与手表同步发布时使用同一个 Release 标签，并上传两个对应 APK。
-- 当前发布线为 `0.2.1`。
+- 当前发布线为 `0.2.2`。
 
 ### 许可证边界
 
@@ -288,8 +288,8 @@ macOS / Linux 使用 `./gradlew`。不要并行构建两个工程。
 对最终准备上传的文件计算，而不是对中间构建产物计算：
 
 ```powershell
-Get-FileHash -Algorithm SHA256 "dist/ToFA-0.2.1-phone.apk"
-Get-FileHash -Algorithm SHA256 "dist/ToFA-0.2.1-watch.apk"
+Get-FileHash -Algorithm SHA256 "dist/ToFA-0.2.2-phone.apk"
+Get-FileHash -Algorithm SHA256 "dist/ToFA-0.2.2-watch.apk"
 ```
 
 上传后重新下载附件并复核一次。Release 文本使用 [open-source/RELEASE_TEMPLATE.md](open-source/RELEASE_TEMPLATE.md)。
