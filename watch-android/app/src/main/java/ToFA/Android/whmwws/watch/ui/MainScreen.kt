@@ -118,6 +118,28 @@ fun Modifier.circularEdgePadding(base: Dp = WatchPagePadding): Modifier = compos
 }
 
 /**
+ * 固定在页面底部的提示块专用：按屏幕尺寸静态计算圆屏弦长内边距。
+ * [circularEdgePadding] 读取自身测量位置，提示文字换行会改变块高度，
+ * 高度又影响中心位置、进而改写内边距，形成
+ * 「内边距 → 换行 → 高度 → 位置 → 内边距」的反馈环；页面进场缩放时逐帧触发，表现为抽搐。
+ * 这里改用「距屏幕底部固定距离」作为锚点一次算好，不读取测量结果，因此完全稳定。
+ */
+@Composable
+fun Modifier.bottomAnchorEdgePadding(
+    base: Dp = WatchPagePadding,
+    anchorFromBottom: Dp,
+): Modifier = composed {
+    if (!isRoundScreen()) return@composed padding(horizontal = base)
+    val density = LocalDensity.current
+    val config = LocalConfiguration.current
+    val radiusPx = with(density) { (minOf(config.screenWidthDp, config.screenHeightDp) / 2f).dp.toPx() }
+    val centerYPx = with(density) { (config.screenHeightDp.dp - anchorFromBottom).toPx() }
+    val dy = abs(centerYPx - radiusPx)
+    val inset = radiusPx - sqrt((radiusPx * radiusPx - dy * dy).coerceAtLeast(0f).toDouble()).toFloat()
+    padding(horizontal = base + with(density) { (inset * 0.92f).toDp() })
+}
+
+/**
  * 圆屏滚动页的静态安全边距：把内容限制在圆盘中段弦长内，
  * 配合 [RoundScrollPageVerticalPadding] 的上下留白，滚到底也不会被弧边裁切。
  */

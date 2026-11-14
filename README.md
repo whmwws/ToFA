@@ -6,9 +6,14 @@
 
 GitHub Release 是主发布渠道，每个版本同时提供手机端与手表端 APK：
 
-- [ToFA 0.2.3 发布页](https://github.com/whmwws/ToFA/releases/tag/0.2.3)
-- [手机端 APK（0.2.3）](https://github.com/whmwws/ToFA/releases/download/0.2.3/ToFA-0.2.3-phone.apk)
-- [手表端 APK（0.2.3）](https://github.com/whmwws/ToFA/releases/download/0.2.3/ToFA-0.2.3-watch.apk)
+- [ToFA 0.2.4 发布页](https://github.com/whmwws/ToFA/releases/tag/0.2.4)
+- [手机端 APK（0.2.4）](https://github.com/whmwws/ToFA/releases/download/0.2.4/ToFA-0.2.4-phone.apk)
+- [手表端 APK（0.2.4）](https://github.com/whmwws/ToFA/releases/download/0.2.4/ToFA-0.2.4-watch.apk)
+- [韩语语言包](https://github.com/whmwws/ToFA/releases/download/0.2.4/ToFA-lang-ko.json)
+- [德语语言包](https://github.com/whmwws/ToFA/releases/download/0.2.4/ToFA-lang-de.json)
+- [法语语言包](https://github.com/whmwws/ToFA/releases/download/0.2.4/ToFA-lang-fr.json)
+
+语言包下载后在「设置 → 语言 → 导入语言包（JSON）」导入，手机与手表都可使用；简体中文、English、繁體中文、日本語已内置，无需下载。
 
 国内网络访问 GitHub 较慢时，请改用国内镜像：
 

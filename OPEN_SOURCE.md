@@ -27,6 +27,7 @@ ToFA/
 │  ├─ RELEASE_CHECKLIST.md
 │  ├─ RELEASE_TEMPLATE.md
 │  └─ templates/              # GitHub / Gitee Issue 与 PR 模板
+├─ language-packs/            # 可选语言包，随 Release 附件发布
 ├─ phone/                     # 当前 Android 手机端
 └─ watch-android/             # 当前 Android 手表端
 ```
@@ -37,7 +38,7 @@ ToFA/
 
 - 双端统一使用纯语义版本号 `x.y.z`，唯一来源为各自 `app/build.gradle.kts` 的 `versionName`。
 - 手机与手表同步发布时使用同一个 Release 标签，并上传两个对应 APK。
-- 当前发布线为 `0.2.3`。
+- 当前发布线为 `0.2.4`。
 
 ### 许可证边界
 

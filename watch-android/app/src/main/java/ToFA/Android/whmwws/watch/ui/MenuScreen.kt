@@ -126,7 +126,11 @@ private fun WatchRowColumn(
             content = content,
         )
         Column(
-            modifier = Modifier.fillMaxWidth().circularEdgePadding().padding(bottom = 2.dp),
+            // 固定锚点计算弦长：逐帧测量会与提示文本换行形成反馈环，进场缩放时抽搐
+            modifier = Modifier
+                .fillMaxWidth()
+                .bottomAnchorEdgePadding(anchorFromBottom = 22.dp)
+                .padding(bottom = 2.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             // 版本号 / 官网 / 返回提示三行紧挨着排，靠行高与 0 间距收紧，
             // 圆屏底部弦长很窄，仍留两行余量避免折行后被裁切。

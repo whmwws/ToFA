@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -40,6 +39,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
@@ -68,6 +68,8 @@ fun AdbSyncScreen(vm: AppViewModel, onBack: () -> Unit) {
     var host by remember { mutableStateOf(vm.adbHost) }
     var port by remember { mutableStateOf(vm.adbPort) }
     val logScroll = rememberScrollState()
+    // 日志默认折叠为最后三条，点击标题或日志框展开/收起
+    var logExpanded by remember { mutableStateOf(false) }
 
     var showPushChoice by remember { mutableStateOf(false) }
     var showPassword by remember { mutableStateOf(false) }
@@ -84,8 +86,8 @@ fun AdbSyncScreen(vm: AppViewModel, onBack: () -> Unit) {
     var pullError by remember { mutableStateOf<String?>(null) }
     var pendingPull by remember { mutableStateOf<Pair<String, String>?>(null) }
 
-    LaunchedEffect(vm.adbLog) {
-        logScroll.animateScrollTo(logScroll.maxValue)
+    LaunchedEffect(vm.adbLog, logExpanded) {
+        if (logExpanded) logScroll.animateScrollTo(logScroll.maxValue)
     }
 
     fun save() = vm.saveAdbAddress(host, port, vm.adbPairPort)
@@ -420,22 +422,43 @@ fun AdbSyncScreen(vm: AppViewModel, onBack: () -> Unit) {
             )
 
             if (vm.adbLog.isNotBlank()) {
+                val logLines = vm.adbLog.trim().lines().filter { it.isNotBlank() }
+                // 折叠时只渲染最后三条；展开时渲染全部，日志框高度固定，不随内容撑开
+                val logText = if (logExpanded) {
+                    logLines.joinToString("\n")
+                } else {
+                    logLines.takeLast(3).joinToString("\n")
+                }
                 Spacer(Modifier.height(16.dp))
-                Text(tr("运行日志", "Runtime log"), style = MaterialTheme.typography.titleSmall)
+                Row(
+                    modifier = Modifier.fillMaxWidth().clickable { logExpanded = !logExpanded },
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(tr("运行日志", "Runtime log"), style = MaterialTheme.typography.titleSmall)
+                    Spacer(Modifier.weight(1f))
+                    Text(
+                        if (logExpanded) tr("收起", "Collapse") else tr("展开全部", "Show all"),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                }
                 Spacer(Modifier.height(6.dp))
                 Card(
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                    modifier = Modifier.fillMaxWidth().heightIn(min = 80.dp, max = 200.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(if (logExpanded) 220.dp else 72.dp)
+                        .clickable { logExpanded = !logExpanded },
                 ) {
                     Text(
-                        text = vm.adbLog,
+                        text = logText,
                         style = MaterialTheme.typography.bodySmall,
                         fontFamily = FontFamily.Monospace,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(12.dp)
-                            .verticalScroll(logScroll),
+                            .verticalScroll(logScroll, enabled = logExpanded),
                     )
                 }
             }

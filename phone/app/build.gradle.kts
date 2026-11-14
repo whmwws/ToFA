@@ -12,9 +12,9 @@ android {
         applicationId = "ToFA.Android.whmwws.phone"
         minSdk = 26
         targetSdk = 34
-        versionCode = 4
+        versionCode = 5
         // 版本号唯一来源：界面通过 PackageManager 读取这里的 versionName
-        versionName = "0.2.3"
+        versionName = "0.2.4"
     }
 
     buildFeatures {

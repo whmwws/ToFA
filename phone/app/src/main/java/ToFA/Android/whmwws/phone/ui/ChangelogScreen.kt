@@ -45,6 +45,28 @@ private data class ChangelogRelease(
  */
 private val ToFAChangelog = listOf(
     ChangelogRelease(
+        version = "0.2.4",
+        date = "2026-11-14",
+        items = listOf(
+            ChangelogItem(
+                "传递页运行日志移到提示文本下方，固定高度并默认显示最后三条，点击展开、再点收起。",
+                "On the Transfer page the log now sits below the hints, has a fixed height, shows the last three lines, and expands or collapses on tap.",
+            ),
+            ChangelogItem(
+                "主页底部显示当前版本号，点击 ToFA 徽标可打开官网。",
+                "The home screen shows the current version at the bottom, and tapping the ToFA logo opens the website.",
+            ),
+            ChangelogItem(
+                "修复手表长按菜单底部提示的抽搐：弦长内边距改为静态计算，布局与动画保持不变。",
+                "Fixed the jitter in the watch long-press menu footer: chord padding is now static, with layout and animations unchanged.",
+            ),
+            ChangelogItem(
+                "新增韩语、德语、法语语言包，随 Release 附件发布，可在设置中导入。",
+                "Added Korean, German and French language packs as release attachments; import them from Settings.",
+            ),
+        ),
+    ),
+    ChangelogRelease(
         version = "0.2.3",
         date = "2026-11-14",
         items = listOf(

@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -71,6 +72,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -112,6 +114,13 @@ fun AccountListScreen(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val snackbar = remember { SnackbarHostState() }
+    val uriHandler = LocalUriHandler.current
+    // 版本号唯一来源为 app/build.gradle.kts 的 versionName
+    val versionName = remember {
+        runCatching {
+            context.packageManager.getPackageInfo(context.packageName, 0).versionName
+        }.getOrNull().orEmpty()
+    }
     var now by remember { mutableLongStateOf(System.currentTimeMillis()) }
     var qrAccount by remember { mutableStateOf<TotpAccount?>(null) }
     var pendingDelete by remember { mutableStateOf<TotpAccount?>(null) }
@@ -134,9 +143,12 @@ fun AccountListScreen(
         topBar = {
             TopAppBar(
                 title = {
+                    // 徽标整体可点，打开项目官网
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(start = 4.dp),
+                        modifier = Modifier
+                            .padding(start = 4.dp, end = 8.dp)
+                            .clickable { uriHandler.openUri("https://whmwws.icu/tools/ToFA") },
                     ) {
                         Icon(
                             Icons.Filled.Security,
@@ -176,6 +188,18 @@ fun AccountListScreen(
                     Icon(Icons.Filled.Add, contentDescription = tr("添加密钥", "Add key"))
                 }
             }
+        },
+        bottomBar = {
+            Text(
+                text = "v$versionName",
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                fontSize = 11.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .navigationBarsPadding()
+                    .padding(top = 2.dp, bottom = 6.dp),
+            )
         },
         snackbarHost = { SnackbarHost(snackbar) },
         containerColor = MaterialTheme.colorScheme.background,
